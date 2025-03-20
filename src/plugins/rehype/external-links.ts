@@ -1,9 +1,19 @@
 import rehypeExternalLinks, { type Options } from "rehype-external-links";
 
 export const rehypeExternalLinksOptions = {
-	content: {
-		type: "text",
-		value: " ↗",
+	content: (element) => {
+		if (
+			element.children.length === 1 &&
+			element.children[0].type === "element" &&
+			element.children[0].tagName === "img"
+		) {
+			return;
+		}
+
+		return {
+			type: "text",
+			value: " ↗",
+		};
 	},
 	contentProperties: {
 		class: "external-link",
