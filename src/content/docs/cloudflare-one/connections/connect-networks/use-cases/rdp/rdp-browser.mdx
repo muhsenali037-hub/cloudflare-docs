@@ -36,13 +36,13 @@ Browser-based RDP can be used in conjunction with [routing over WARP](/cloudflar
 
 ## 3. Create a DNS record
 
-Cloudflare must be aware of your publically routed domain to proxy browser-based RDP traffic to your private network; this includes any [subdomain](/dns/manage-dns-records/how-to/create-subdomain.mdx) you wish to utilize.
+To enable Cloudflare to connect you to your targets (i.e., your Windows machines), you must configure a DNS record for the full public domain (including the subdomain) Cloudflare will be routing your browser-based RDP traffic through. This domain will be used to access any targets that are accessible to users through your Access application (see Step 4).
 
-To do this, please ensure there is a corresponding DNS record for your full domain. This enables Cloudflare to source browser-based RDP traffic to your private network. For example, if you would like browser-based RDP traffic to go through `rdp.example.com`, where `rdp` is the subdomain and `example.com` is the main domain, you need to ensure there is a Cloudflare DNS record for `rdp`.
+For example, if your Access application is configured for `rdp.example.com`, you must have a DNS record for `rdp` under the `example.com` domain.
 
-In the [Cloudflare dashboard](https://dash.cloudflare.com/login), select your domain, then go to **DNS** > **Records** and verify that a [DNS record](/dns/manage-dns-records/how-to/create-dns-records/) exists for your domain. Again, the subdomain *must* have a record as well. Any arbitrary DNS record will work.
+To do this, go to the [Cloudflare dashboard](https://dash.cloudflare.com/login), select your domain, then go to **DNS** > **Records** and verify that a [DNS record](/dns/manage-dns-records/how-to/create-dns-records/) exists for your domain. Again, the subdomain *must* have a record as well.
 
-If you do not already have a DNS record, [create a new DNS record](/dns/manage-dns-records/how-to/create-dns-records/#create-dns-records). Using `rdp.example.com` for demonstration, create an `AAAA` record that points your Access application public subdomain (`rdp`) to the IPv6 [discard address range](https://www.rfc-editor.org/rfc/rfc6666.html):
+If you do not already have a DNS record, [create a new DNS record](/dns/manage-dns-records/how-to/create-dns-records/#create-dns-records). Using `rdp.example.com` for demonstration, create an `AAAA` record that points your public subdomain (`rdp`) to the IPv6 [discard address range](https://www.rfc-editor.org/rfc/rfc6666.html):
 
 - **Type**: _AAAA_
 - **Name**: `rdp`
