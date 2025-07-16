@@ -1,0 +1,226 @@
+---
+title: Dynamic routing
+pcx_content_type: navigation
+order: 1
+sidebar:
+  order: 4
+  group:
+    badge: Beta
+---
+
+import { CardGrid, LinkTitleCard, YouTube } from "~/components";
+
+## Introduction
+
+Dynamic routing is a powerful feature in Cloudflare AI Gateway that enables you to create sophisticated request routing flows without complex code changes. Instead of managing multiple gateway configurations and custom logic in your application, dynamic routing provides a visual interface and JSON-based configuration to handle complex AI provider routing scenarios.
+
+With dynamic routing, you can easily implement advanced use cases such as:
+
+- **User-based routing**: Direct different user segments to specific models or providers (e.g., experimental users get the latest Claude 4, while enterprise users use stable Claude 3)
+- **Geographic routing**: Route requests to region-specific model endpoints for better performance and compliance
+- **Dynamic rate limiting**: Apply different rate limits and budget controls based on user tiers, with automatic fallback when limits are exceeded
+- **A/B testing**: Fractionally test new models across user segments without code deployments
+- **Context-aware routing**: Route requests to different models or system prompts based on the content of the user query
+
+Dynamic routing eliminates the need for complex application logic and multiple gateway configurations, making it accessible to both developers and non-technical team members while enabling faster iteration and testing of new AI models and providers.
+
+## How dynamic routing works
+
+Dynamic routing operates through a visual flow-based system where you create **routes** using the Cloudflare dashboard. Each route defines how incoming requests should be processed and which AI providers should handle them.
+
+### Route structure
+
+A route consists of interconnected **elements** that form a processing pipeline. Each element can have:
+
+- **Zero or more inputs**: Where data flows into the element
+- **Zero or more outputs**: Where data flows out to the next element
+
+:::note
+Only a [`start element`](#start-element) will have zero inputs and only an [`end element`](#end-element) will have zero outputs
+:::
+
+When a request enters your route, it flows through the connected elements until it reaches an [`end element`](#end-element).
+
+### JSON configuration
+
+Routes are represented using a simple JSON structure:
+
+```json
+{
+  "id": "<route id>",
+  "name": "<route name>",
+  "elements": [<array of elements>]
+}
+```
+
+This JSON format allows for programmatic route creation and version control, while the visual editor provides an intuitive interface for building and modifying routes.
+
+### Supported elements
+
+Dynamic routing supports several types of elements that you can combine to create sophisticated routing flows. Each element has specific inputs, outputs, and configuration options.
+
+#### Start Element
+
+Marks the beginning of a route. Every route must start with a Start element.
+
+- **Inputs**: None
+- **Outputs**:
+  - `next`: Forwards the unchanged request to the next element
+
+```json
+{
+	"id": "<id>",
+	"type": "start",
+	"outputs": {
+		"next": { "elementId": "<id>" }
+	}
+}
+```
+
+#### Conditional Element (If/Else)
+
+Evaluates a condition based on request parameters and routes the request accordingly.
+
+- **Inputs**: Request
+- **Outputs**:
+  - `true`: Forwards request to provided element if condition evaluates to true
+  - `false`: Forwards request to provided element if condition evaluates to false
+
+```json
+{
+	"id": "<id>",
+	"type": "conditional",
+	"properties": {
+		"condition": {
+			"metadata.plan": { "$eq": "free" } // Supports MongoDB-like operators
+		}
+	},
+	"outputs": {
+		"true": { "elementId": "<id>" },
+		"false": { "elementId": "<id>" }
+	}
+}
+```
+
+Here's how you can add it in the dashboard:
+
+![Conditional Element](~/assets/images/ai-gateway/dynamic-routing/create-split-element.png)
+
+#### Percentage Split
+
+Routes requests probabilistically across multiple outputs, useful for A/B testing and gradual rollouts.
+
+- **Inputs**: Request
+- **Outputs**: Up to 5 named percentage outputs, plus an optional `else` fallback
+  - Each output has a fractional probability (must total 100%)
+  - `else` output handles remaining percentage if other branches don't sum to 100%
+
+```json
+{
+	"id": "<id>",
+	"type": "percentage",
+	"outputs": {
+		"10%": { "elementId": "<id>" },
+		"50%": { "elementId": "<id>" },
+		"else": { "elementId": "<id>" }
+	}
+}
+```
+
+Here's how you can add it in the dashboard:
+
+{/* # TODO - Change this image to highlight switch */}
+
+![Percentage Split Element](~/assets/images/ai-gateway/dynamic-routing/create-split-element.png)
+
+#### Rate Limit
+
+Applies rate limiting based on request metadata. Supports both count-based and cost-based limits.
+
+- **Inputs**: Request
+- **Outputs**:
+  - `success`: Forwards request to provided element if request is not rate limited
+  - `fallback`: Optional output for rate-limited requests (route terminates if not provided)
+
+**Properties**:
+
+- `limitType`: "count" or "cost"
+- `key`: Request field to use for rate limiting (e.g., "metadata.user_id")
+- `limit`: Maximum allowed requests/cost
+- `interval`: Time window in seconds
+- `technique`: "sliding" or "fixed" window **TODO: Explain these better**
+
+```json
+{
+	"id": "<id>",
+	"type": "rate_limit",
+	"properties": {
+		"limitType": "count",
+		"key": "metadata.user_id",
+		"limit": 100,
+		"interval": 3600,
+		"technique": "sliding"
+	},
+	"outputs": {
+		"success": { "elementId": "node_model_workers_ai" },
+		"fallback": { "elementId": "node_model_openai_mini" }
+	}
+}
+```
+
+Here's how you can add it in the dashboard:
+
+![Rate Limit Element](~/assets/images/ai-gateway/dynamic-routing/create-rate-limit-element.png)
+
+#### Model
+
+Executes inference using a specified model and provider with configurable timeout and retry settings.
+
+- **Inputs**: Request
+- **Outputs**:
+  - `success`: Forwards request to provided element if model successfully starts streaming a response
+  - `fallback`: Optional output if model fails after all retries or times out
+
+**Properties**:
+
+- `provider`: AI provider (e.g., "openai", "anthropic")
+- `model`: Specific model name
+- `timeout`: Request timeout in milliseconds
+- `retries`: Number of retry attempts
+
+```json
+{
+	"id": "<id>",
+	"type": "model",
+	"properties": {
+		"provider": "openai",
+		"model": "gpt-4o-mini",
+		"timeout": 60000,
+		"retries": 4
+	},
+	"outputs": {
+		"success": { "elementId": "<id>" },
+		"fallback": { "elementId": "<id>" }
+	}
+}
+```
+
+Here's how you can add it in the dashboard:
+
+{/* # TODO update image */}
+
+![Model Element](~/assets/images/ai-gateway/dynamic-routing/create-split-element.png)
+
+#### End Element
+
+Marks the end of a route. Returns the last successful model response, or an error if no model response was generated.
+
+- **Inputs**: Request
+- **Outputs**: None
+
+```json
+{
+	"id": "<id>",
+	"type": "end"
+}
+```

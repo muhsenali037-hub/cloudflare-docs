@@ -1,0 +1,132 @@
+---
+title: Bring your own keys
+pcx_content_type: navigation
+sidebar:
+  order: 5
+  badge: Beta
+---
+
+import { CardGrid, LinkTitleCard } from "~/components";
+
+## Introduction
+
+Bring your own keys (BYOK) is a feature in Cloudflare AI Gateway that allows you to securely store your AI provider API keys directly in the Cloudflare dashboard. Instead of including API keys in every request to your AI models, you can configure them once in the dashboard and reference them in your gateway configuration.
+
+This approach offers several key benefits:
+
+- **Enhanced security**: API keys are stored securely in Cloudflare's infrastructure and never exposed in your application code or logs
+- **Simplified development**: No need to manage API keys in your application environment or pass them with each request
+- **Centralized management**: Update API keys for all your applications from a single location in the dashboard
+- **Reduced risk**: Eliminates the possibility of accidentally exposing API keys in client-side code or version control
+
+## How it works
+
+With BYOK enabled, your workflow changes from:
+{/* TODO UPDATE THE USAGE HERE TO UNIVERSAL */}
+
+1. **Traditional approach**: Include API key in every request header
+
+   ```bash
+   curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_slug}/openai/chat/completions \
+     -H "Authorization: Bearer YOUR_OPENAI_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"model": "gpt-4", "messages": [...]}'
+   ```
+
+2. **BYOK approach**: Configure key once in dashboard, make requests without exposing keys
+   ```bash
+   curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_slug}/openai/chat/completions \
+     -H "Content-Type: application/json" \
+     -d '{"model": "gpt-4", "messages": [...]}'
+   ```
+
+## Supported providers
+
+BYOK currently supports the following AI providers:
+
+{/* TODO UPDATE */}
+
+- **OpenAI**: GPT models, DALL-E, Whisper, and other OpenAI services
+- **Anthropic**: Claude models and related services
+- **Google AI**: Gemini models and Google AI services
+- **Azure OpenAI**: Azure-hosted OpenAI models
+- **AWS Bedrock**: Amazon Bedrock models
+- **Cohere**: Cohere language models
+- **Hugging Face**: Hugging Face Inference API
+
+## Setting up BYOK
+
+### Prerequisites
+
+- An active Cloudflare account with AI Gateway enabled
+- Valid API keys for the AI providers you want to use
+- Appropriate permissions to manage AI Gateway settings
+
+### Configure API keys
+
+{/* TODO UPDATE */}
+
+1. Log into the [Cloudflare dashboard](https://dash.cloudflare.com/) and select your account.
+2. Go to **AI** > **AI Gateway**.
+3. Select your gateway or create a new one.
+4. Navigate to the **API Keys** section.
+5. Click **Add API Key**.
+6. Select your AI provider from the dropdown.
+7. Enter your API key and optionally provide a description.
+8. Click **Save**.
+
+{/* TODO UPDATE IMAGE */}
+![Bring your own key](~/assets/images/ai-gateway/bring-your-own-key.png)
+
+:::note[Security best practices]
+
+- API keys are encrypted at rest and in transit
+- Keys are never logged or exposed in response headers
+- You can rotate keys at any time without code changes
+- Consider using separate keys for development and production environments
+  :::
+
+### Update your applications
+
+Once you've configured your API keys in the dashboard:
+
+1. **Remove API keys from your code**: Delete any hardcoded API keys or environment variables
+2. **Update request headers**: Remove authorization headers from your requests
+3. **Test your integration**: Verify that requests work without including API keys
+
+## Managing API keys
+
+### Viewing configured keys
+
+In the AI Gateway dashboard, you can:
+
+- View all configured API keys by provider
+- See when each key was last used
+- Check the status of each key (active, expired, invalid)
+
+### Rotating keys
+
+To rotate an API key:
+
+{/* TODO UPDATE */}
+
+1. Generate a new API key from your AI provider
+2. In the Cloudflare dashboard, edit the existing key entry
+3. Replace the old key with the new one
+4. Save the changes
+
+Your applications will immediately start using the new key without any code changes or downtime.
+
+### Revoking access
+
+To remove an API key:
+
+{/* TODO UPDATE */}
+
+1. In the AI Gateway dashboard, find the key you want to remove
+2. Click the **Delete** button
+3. Confirm the deletion
+
+:::caution[Impact of key deletion]
+Deleting an API key will immediately stop all requests that depend on it. Make sure to update your applications or configure alternative keys before deletion.
+:::
