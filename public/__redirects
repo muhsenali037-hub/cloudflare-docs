@@ -35,6 +35,8 @@
 /network-interconnect/changelog/index.xml /changelog/rss/network-interconnect.xml 301
 /rules/changelog/index.xml /changelog/rss/rules.xml 301
 /ssl/changelog/index.xml /changelog/rss/ssl.xml 301
+/waf/change-log/index.xml /changelog/rss/waf.xml 301
+/waf/change-log/general-updates/index.xml /changelog/rss/waf.xml 301
 
 ## legacy
 /release-notes/index.xml /changelog/rss/index.xml 301
@@ -141,6 +143,7 @@
 # ai-audit
 /ai-audit/features/detect-ai-crawlers/ /ai-audit/features/analyze-ai-crawlers/ 301
 /ai-audit/features/enforce-robots-txt/ /ai-audit/features/analyze-ai-crawlers/ 301
+/ai-audit/features/analyze-ai-crawlers/ /ai-audit/features/analyze-ai-traffic/ 301
 
 # AI Gateway
 /ai-gateway/get-started/configuring-settings/ /ai-gateway/get-started/ 301
@@ -428,8 +431,10 @@
 /ddos-protection/managed-rulesets/network/configure-dashboard/  /ddos-protection/managed-rulesets/network/network-overrides/configure-dashboard/ 301
 /ddos-protection/managed-rulesets/network/link-configure-terraform/  /ddos-protection/managed-rulesets/network/network-overrides/link-configure-terraform/ 301
 /ddos-protection/managed-rulesets/network/override-expressions/  /ddos-protection/managed-rulesets/network/network-overrides/override-expressions/ 301
+/ddos-protection/managed-rulesets/adjust-rules/false-positive/ /ddos-protection/managed-rulesets/http/http-overrides/override-examples/#legitimate-traffic-is-incorrectly-identified-as-an-attack-and-causes-a-false-positive 301
+/ddos-protection/managed-rulesets/adjust-rules/ /ddos-protection/managed-rulesets/http/http-overrides/override-examples/ 301
 
- # dns
+# dns
 /dns/additional-options/cname-flattening/ /dns/cname-flattening/ 301
 /dns/additional-options/dnssec/ /dns/dnssec/ 301
 /dns/foundation-dns/graphql-analytics/ /dns/additional-options/analytics/ 301
@@ -491,6 +496,8 @@
 /durable-objects/get-started/video-series/real-time-messaging/ /durable-objects/video-tutorials/ 301
 /durable-objects/get-started/video-series/serverless-websocket/ /durable-objects/video-tutorials/ 301
 /durable-objects/get-started/video-series/ /durable-objects/video-tutorials/ 301
+
+/durable-objects/what-are-durable-objects/ /durable-objects/concepts/what-are-durable-objects/ 301
 
 # email-routing
 /email-routing/enable-email-routing/ /email-routing/get-started/enable-email-routing/ 301
@@ -954,7 +961,7 @@
 /load-balancing/local-traffic-management/ltm-magic-wan/ /load-balancing/private-network/magic-wan/ 301
 
 # logs
-/logs/log-fields/ /logs/reference/log-fields/ 301
+/logs/log-fields/ /logs/logpush/logpush-job/datasets/ 301
 /logs/logpull-api/ /logs/logpull/ 301
 /logs/logpull-api/requesting-logs/ /logs/logpull/requesting-logs/ 301
 /logs/logpush/aws-s3/ /logs/logpush/logpush-job/enable-destinations/aws-s3/ 301
@@ -1169,6 +1176,7 @@
 /queues/reference/consumer-concurrency/ /queues/configuration/consumer-concurrency/ 301
 /queues/reference/local-development/ /queues/configuration/local-development/ 301
 /queues/reference/metrics/ /queues/observability/metrics/ 301
+/queues/examples/publish-to-a-queue-over-http/ /queues/examples/publish-to-a-queue-via-http/ 301
 
 
 # reference architectures & design guides
@@ -1553,7 +1561,34 @@
 /support/firewall/tools/ /waf/ 301
 /support/firewall/tools/configuring-cloudflare-rate-limiting/ /waf/reference/legacy/old-rate-limiting/ 301
 /support/firewall/tools/troubleshooting-cloudflare-rate-limiting/ /waf/reference/legacy/old-rate-limiting/troubleshooting/ 301
+/waf/change-log/2025-01-06/ /changelog/2025-01-06-waf-release/ 301
+/waf/change-log/2025-01-13/ /changelog/2025-01-13-waf-release/ 301
+/waf/change-log/2025-01-21/ /changelog/2025-01-21-waf-release/ 301
+/waf/change-log/2025-02-11/ /changelog/2025-02-11-waf-release/ 301
+/waf/change-log/2025-02-18/ /changelog/2025-02-18-waf-release/ 301
+/waf/change-log/2025-02-24/ /changelog/2025-02-24-waf-release/ 301
+/waf/change-log/2025-03-03/ /changelog/2025-03-03-waf-release/ 301
+/waf/change-log/2025-03-10/ /changelog/2025-03-10-waf-release/ 301
+/waf/change-log/2025-03-11-emergency/ /changelog/2025-03-11-emergency-waf-release/ 301
+/waf/change-log/2025-03-17/ /changelog/2025-03-17-waf-release/ 301
+/waf/change-log/2025-03-19-emergency/ /changelog/2025-03-19-emergency-waf-release/ 301
+/waf/change-log/2025-03-22-emergency/ /changelog/2025-03-22-emergency-waf-release/ 301
+/waf/change-log/2025-04-02/ /changelog/2025-04-02-waf-release/ 301
+/waf/change-log/2025-04-14/ /changelog/2025-04-14-waf-release/ 301
+/waf/change-log/2025-04-22/ /changelog/2025-04-22-waf-release/ 301
+/waf/change-log/2025-04-26-emergency/ /changelog/2025-04-26-emergency-waf-release/ 301
+/waf/change-log/2025-05-05/ /changelog/2025-05-05-waf-release/ 301
+/waf/change-log/2025-05-19/ /changelog/2025-05-19-waf-release/ 301
+/waf/change-log/2025-05-27/ /changelog/2025-05-27-waf-release/ 301
+/waf/change-log/2025-06-02/ /changelog/2025-06-02-waf-release/ 301
+/waf/change-log/2025-06-09/ /changelog/2025-06-09-waf-release/ 301
+/waf/change-log/2025-06-16/ /changelog/2025-06-16-waf-release/ 301
+/waf/change-log/2025-07-07/ /changelog/2025-07-07-waf-release/ 301
+/waf/change-log/2025-07-14/ /changelog/2025-07-14-waf-release/ 301
+/waf/change-log/2025-07-21/ /changelog/2025-07-21-waf-release/ 301
+/waf/change-log/2025-07-21-emergency/ /changelog/2025-07-21-emergency/ 301
 /waf/change-log/historical/ /waf/change-log/historical-2019/ 301
+/waf/change-log/managed-rulesets/ /waf/change-log/ 301
 /waf/custom-rules/manage-dashboard/ /waf/custom-rules/create-dashboard/ 301
 /waf/security-analytics/ /waf/analytics/security-analytics/ 301
 /waf/custom-rules/use-cases/require-valid-hmac-token/ /waf/custom-rules/use-cases/configure-token-authentication/ 301
@@ -2112,6 +2147,7 @@
 /cloudflare-one/policies/filtering/enforce-sessions/ /cloudflare-one/connections/connect-devices/warp/configure-warp/warp-sessions/ 301
 /cloudflare-one/policies/zero-trust/policy-management/ /cloudflare-one/policies/access/policy-management/ 301
 /cloudflare-one/policies/filtering/dns-policies-builder/ /cloudflare-one/policies/gateway/dns-policies/ 301
+/cloudflare-one/policies/gateway/http-policies/websocket/ /cloudflare-one/policies/gateway/http-policies/common-policies/#filter-websocket-traffic 301
 /cloudflare-one/cloudflare-teams-roles-permissions/ /cloudflare-one/roles-permissions/ 301
 /cloudflare-one/technical-limitations/ /cloudflare-one/account-limits/ 301
 /support/traffic/argo-tunnel/ /cloudflare-one/connections/connect-networks/ 301
@@ -2185,6 +2221,7 @@
 /fundamentals/setup/manage-domains/* /fundamentals/manage-domains/:splat 301
 /fundamentals/setup/manage-members/* /fundamentals/manage-members/:splat 301
 /logs/get-started/enable-destinations/* /logs/logpush/logpush-job/enable-destinations/:splat 301
+/logs/reference/log-fields/* /logs/logpush/logpush-job/datasets/:splat 301
 
 # Cloudflare One / Zero Trust
 /cloudflare-one/connections/connect-networks/install-and-setup/tunnel-guide/local/as-a-service/* /cloudflare-one/connections/connect-networks/configure-tunnels/local-management/as-a-service/:splat 301
