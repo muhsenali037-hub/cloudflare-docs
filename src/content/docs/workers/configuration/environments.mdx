@@ -5,17 +5,24 @@ head: []
 description: Deploy multiple isolated copies of your Worker application with independent configurations, resources, and deployment URLs.
 ---
 
-import { WranglerConfig, Render, TabItem, Tabs, Steps } from "~/components";
+import {
+	WranglerConfig,
+	Render,
+	TabItem,
+	Tabs,
+	Steps,
+	PackageManagers,
+} from "~/components";
 
 An **environment** is a separate, isolated instance of your Worker application. For example, you can have a `staging` and a `production` environment running simultaneously.
 
-Each environment deploys to its own unique URL and can have different configuration — such as different resources that your bindings connect to, different environment variables, and different secrets. This isolation lets you test changes in one environment without affecting users in another.
+Each environment deploys to its own unique URL and can have different configuration — such as different resources that your [bindings](/workers/runtime-apis/bindings/) connect to, different [environment variables](/workers/configuration/environment-variables/), and different [secrets](/workers/configuration/secrets/). This isolation lets you test changes in one environment without affecting users in another.
 
-You first define environments in Wrangler configuration, and then deploy them either manually or automatically through our Git integration.
+You first define environments in [Wrangler configuration](/workers/wrangler/configuration/), and then deploy them either manually or automatically through our [Git integration](/workers/ci-cd/builds/).
 
 ## Configuration
 
-You define environments in your Wrangler configuration file under the `env` field:
+You define environments in your [Wrangler configuration file](/workers/wrangler/configuration/) under the `env` field:
 
 <WranglerConfig>
 
@@ -427,39 +434,26 @@ Because environments run as isolated copies of your application, all of your bin
 Each environment configuration must explicitly define:
 
 - Environment variables (`vars`)
-- All resource bindings (D1 databases, KV namespaces, R2 buckets, etc.)
-- Secrets (managed separately via Wrangler or the dashboard)
+- All resource bindings ([D1 databases](/d1/), [KV namespaces](/kv/), [R2 buckets](/r2/), etc.)
+- [Secrets](/workers/configuration/secrets/) (managed separately via Wrangler or the dashboard)
 - Any other configuration specific to that environment
 
 ## Deployment workflows
 
 All environments must be defined in your Wrangler configuration file. Once configured, you can deploy environments through two main workflows:
 
-### Manual deployment with Wrangler
-
-Deploy to specific environments using Wrangler, the Cloudflare API, or Infrastructure as Code tools like Terraform:
-
-```bash
-# Deploy to the default environment
-npx wrangler deploy
-
-# Deploy to a specific environment
-npx wrangler deploy --env staging
-npx wrangler deploy --env production
-```
-
 ### Automated deployment with Git integration
 
-When you connect your repository to Cloudflare, Workers Builds automatically creates isolated preview environments for every pull request and can deploy specific branches to designated environments.
+When you connect your repository to Cloudflare, [Workers Builds](/workers/ci-cd/builds/) automatically creates isolated preview environments for every pull request and can deploy specific branches to designated environments.
 
 #### Pull request previews
 
 Every pull request automatically gets its own isolated environment. When you open a PR:
 
 - Cloudflare automatically builds and deploys your code
-- You receive two URLs instantly:
-  - **Preview URL**: `https://<hash>-<worker-name>.<subdomain>.workers.dev` (e.g., `https://0a8a97c0-my-api.korinne.workers.dev`)
-  - **Branch URL**: `https://<branch-name>-<worker-name>.<subdomain>.workers.dev` (e.g., `https://new-feature-my-api.korinne.workers.dev`)
+- You receive two URLs:
+  - **Preview URL**: A unique URL for each commit - `https://<hash>-<worker-name>.<subdomain>.workers.dev`
+  - **Branch URL**: A stable URL that always shows the latest commit on that branch - `https://<branch-name>-<worker-name>.<subdomain>.workers.dev`
 
 These preview environments are perfect for:
 
@@ -467,11 +461,56 @@ These preview environments are perfect for:
 - Sharing work with teammates for review
 - Running integration tests against PR-specific endpoints
 
+### Manual deployment
+
+#### Wrangler
+
+Deploy to specific environments using [Wrangler](/workers/wrangler/):
+
+<PackageManagers type="exec" pkg="wrangler" args="deploy --env staging" />
+<PackageManagers type="exec" pkg="wrangler" args="deploy --env production" />
+
+#### API
+
+When using the API, you don't create "environments" as a separate entity. Instead, each environment is deployed as its own Worker script. Cloudflare uses a naming convention where each environment becomes a Worker named `<worker-name>-<environment-name>`. For example, if your base Worker is named `my-api`:
+
+- The production environment deploys as a Worker named `my-api`
+- The staging environment deploys as a separate Worker named `my-api-staging`
+
+To deploy environments programmatically using the [Cloudflare API](/api/resources/workers/subresources/scripts/methods/update/), you upload each environment as a separate Worker script and specify tags to identify the relationship:
+
+**Deploy to production:**
+
+```bash
+curl -X PUT "https://api.cloudflare.com/client/v4/accounts/{account_id}/workers/scripts/my-api" \
+  -H "Authorization: Bearer {api_token}" \
+  -H "Content-Type: application/javascript" \
+  --data-binary "@worker.js" \
+  --form 'metadata={"main_module":"worker.js","tags":["service=my-api","environment=production"]}'
+```
+
+**Deploy to staging:**
+
+```bash
+curl -X PUT "https://api.cloudflare.com/client/v4/accounts/{account_id}/workers/scripts/my-api-staging" \
+  -H "Authorization: Bearer {api_token}" \
+  -H "Content-Type: application/javascript" \
+  --data-binary "@worker.js" \
+  --form 'metadata={"main_module":"worker.js","tags":["service=my-api","environment=staging"]}'
+```
+
+The tags identify:
+
+- `service`: The base Worker name (same across all environments)
+- `environment`: The specific environment being deployed
+
+This approach means each environment runs as a completely separate Worker with its own isolated execution context, routes, and bindings. The tagging system helps Cloudflare understand the relationship between these separate Workers for management purposes.
+
 ## How bindings behave in environments
 
 Each binding type has different requirements for environment isolation. Understanding these patterns helps prevent data leakage between environments.
 
-### KV namespaces
+### [KV namespaces](/kv/)
 
 **Use different `id` values** to keep data separate between environments:
 
@@ -503,7 +542,7 @@ Each binding type has different requirements for environment isolation. Understa
 
 </WranglerConfig>
 
-### D1 databases
+### [D1 databases](/d1/)
 
 **Use different `database_id` values** to maintain separate data stores:
 
@@ -537,7 +576,7 @@ Each binding type has different requirements for environment isolation. Understa
 
 </WranglerConfig>
 
-### R2 buckets
+### [R2 buckets](/r2/)
 
 **Use different `bucket_name` values** to keep files separate:
 
@@ -569,7 +608,7 @@ Each binding type has different requirements for environment isolation. Understa
 
 </WranglerConfig>
 
-### Queues
+### [Queues](/queues/)
 
 **Use different `queue` names** to prevent message mixing:
 
@@ -605,7 +644,7 @@ Each binding type has different requirements for environment isolation. Understa
 
 </WranglerConfig>
 
-### Hyperdrive
+### [Hyperdrive](/hyperdrive/)
 
 **Use different `id` values** to connect to separate databases:
 
@@ -637,7 +676,7 @@ Each binding type has different requirements for environment isolation. Understa
 
 </WranglerConfig>
 
-### Analytics Engine datasets
+### [Analytics Engine datasets](/analytics/analytics-engine/)
 
 **Use different `dataset` names** to keep metrics separate:
 
@@ -669,7 +708,7 @@ Each binding type has different requirements for environment isolation. Understa
 
 </WranglerConfig>
 
-### Routes
+### [Routes](/workers/configuration/routing/routes/)
 
 **Must use unique `pattern` values.** Each URL pattern can only point to one Worker.
 
@@ -696,7 +735,7 @@ Each binding type has different requirements for environment isolation. Understa
 
 </WranglerConfig>
 
-### Service bindings
+### [Service bindings](/workers/runtime-apis/bindings/service-bindings/)
 
 **Must specify the target environment** by appending the environment name to the `service` field.
 
@@ -727,7 +766,7 @@ Each binding type has different requirements for environment isolation. Understa
 
 </WranglerConfig>
 
-### Workflows
+### [Workflows](/workflows/)
 
 **Must have unique `name` values.** Workflows are account-level resources that environments reference by name.
 
@@ -760,7 +799,7 @@ Each binding type has different requirements for environment isolation. Understa
 
 </WranglerConfig>
 
-### Vectorize indexes
+### [Vectorize indexes](/vectorize/)
 
 **Must have unique `index_name` values per account.** Cannot be changed after creation.
 
@@ -791,7 +830,7 @@ Each binding type has different requirements for environment isolation. Understa
 
 </WranglerConfig>
 
-### Durable Objects
+### [Durable Objects](/durable-objects/)
 
 **Automatically isolated.** Each environment gets its own instances with separate storage:
 
@@ -813,7 +852,7 @@ Each binding type has different requirements for environment isolation. Understa
 
 </WranglerConfig>
 
-### Tail consumers
+### [Tail consumers](/workers/observability/logs/tail-workers/)
 
 **Automatically isolated.** Route logs to the specified Worker:
 
@@ -842,7 +881,7 @@ Each binding type has different requirements for environment isolation. Understa
 
 </WranglerConfig>
 
-### AI binding
+### [AI binding](/workers-ai/)
 
 **Can share configuration.** Provides access to the same AI models across all environments:
 
@@ -858,7 +897,7 @@ Each binding type has different requirements for environment isolation. Understa
 
 </WranglerConfig>
 
-### Browser Rendering
+### [Browser Rendering](/browser-rendering/)
 
 **Can share configuration.** Provides access to the same browser rendering service:
 
@@ -874,7 +913,7 @@ Each binding type has different requirements for environment isolation. Understa
 
 </WranglerConfig>
 
-### mTLS certificates
+### [mTLS certificates](/workers/runtime-apis/bindings/mtls/)
 
 **Can share configuration.** Can use the same certificate or different ones per environment:
 
@@ -920,13 +959,3 @@ Each binding type has different requirements for environment isolation. Understa
 ```
 
 </WranglerConfig>
-
-## Common use cases
-
-Environments enable several development and deployment patterns:
-
-- **Development/Staging/Production workflow** - Test changes in isolated environments before promoting to production
-- **Feature branch deployments** - Create temporary environments for testing new features
-- **Regional deployments** - Run different configurations for different geographic regions
-- **A/B testing** - Deploy variations of your application for experimentation
-- **Client-specific deployments** - Maintain separate environments for different customers or tenants
