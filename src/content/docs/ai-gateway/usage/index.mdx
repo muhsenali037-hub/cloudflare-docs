@@ -1,0 +1,147 @@
+---
+title: Using AI Gateway
+pcx_content_type: get-started
+sidebar:
+  order: 3
+---
+
+import { Render, Badge } from "~/components";
+
+AI Gateway provides multiple ways to integrate with AI providers, offering flexibility and advanced features like caching, analytics, rate limiting, and fallbacks. Choose the integration method that best fits your needs.
+
+## Integration Options
+
+### OpenAI-Compatible Endpoint (Recommended)
+
+The easiest way to get started with AI Gateway is through our OpenAI-compatible `/chat/completions` endpoint. This allows you to use existing OpenAI SDKs and tools with minimal code changes while gaining access to multiple AI providers.
+
+```txt
+https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/compat/chat/completions
+```
+
+**Key benefits:**
+
+- Drop-in replacement for OpenAI API
+- Works with existing OpenAI SDKs
+- Switch between providers by changing the `model` parameter
+- No schema modifications required
+
+[Learn more about OpenAI compatibility →](/ai-gateway/usage/chat-completion/)
+
+### Provider-Specific Endpoints
+
+For direct integration with specific AI providers, use dedicated endpoints that maintain the original provider's API schema while adding AI Gateway features.
+
+```txt
+https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/{provider}
+```
+
+**Available providers:**
+
+- [OpenAI](/ai-gateway/usage/providers/openai/) - GPT models and embeddings
+- [Anthropic](/ai-gateway/usage/providers/anthropic/) - Claude models
+- [Google AI Studio](/ai-gateway/usage/providers/google-ai-studio/) - Gemini models
+- [Workers AI](/ai-gateway/usage/providers/workersai/) - Cloudflare's inference platform
+- [AWS Bedrock](/ai-gateway/usage/providers/bedrock/) - Amazon's managed AI service
+- [Azure OpenAI](/ai-gateway/usage/providers/azureopenai/) - Microsoft's OpenAI service
+- [And 14+ more providers](/ai-gateway/usage/providers/)
+
+### WebSockets API <Badge text="beta" variant="tip" size="small" />
+
+For real-time applications requiring persistent connections, AI Gateway offers WebSockets support. This enables streaming responses and continuous communication with AI providers.
+
+```txt
+wss://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/
+```
+
+**Key benefits:**
+
+- Single persistent connection
+- Real-time streaming responses
+- Support for providers without native WebSocket support
+- Reduced connection overhead
+
+[Learn more about WebSockets API →](/ai-gateway/usage/websockets-api/)
+
+### Dynamic Routes <Badge text="beta" variant="tip" size="small" />
+
+For complex routing scenarios requiring conditional logic, user-based routing, or A/B testing, use Dynamic Routes. This feature enables sophisticated request routing flows without code changes through a visual interface.
+
+**Key benefits:**
+
+- Visual flow-based routing configuration
+- User-based and geographic routing
+- Dynamic rate limiting with fallbacks
+- A/B testing and fractional traffic splitting
+- Context-aware routing based on request content
+- No code changes required for routing logic
+
+[Learn more about Dynamic Routes →](/ai-gateway/features/dynamic-routing/)
+
+## Quick Start Examples
+
+### Using OpenAI SDK with Multiple Providers
+
+```javascript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+	apiKey: "YOUR_PROVIDER_API_KEY",
+	baseURL:
+		"https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/compat",
+});
+
+// Use different providers by changing the model parameter
+const response = await client.chat.completions.create({
+	model: "google-ai-studio/gemini-2.0-flash", // or "openai/gpt-4o", "anthropic/claude-3-haiku"
+	messages: [{ role: "user", content: "Hello, world!" }],
+});
+```
+
+### Dynamic Route Example
+
+```bash
+curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id} \
+  --header 'Content-Type: application/json' \
+  --data '[
+  {
+    "provider": "dynamic-route",
+    "endpoint": "<name-of-your-route>",
+    "headers": {
+      "Authorization": "Bearer {cloudflare_token}",
+      "Content-Type": "application/json"
+    },
+    "query": {
+      "messages": [
+        {
+          "role": "system",
+          "content": "You are a friendly assistant"
+        },
+        {
+          "role": "user",
+          "content": "What is Cloudflare?"
+        }
+      ]
+    }
+  }
+]'
+```
+
+## Choosing the Right Integration
+
+| Use Case                        | Recommended Approach        |
+| ------------------------------- | --------------------------- |
+| **Getting started quickly**     | OpenAI-Compatible Endpoint  |
+| **Existing OpenAI integration** | OpenAI-Compatible Endpoint  |
+| **Provider-specific features**  | Provider-Specific Endpoints |
+| **Real-time/streaming apps**    | WebSockets API              |
+| **Custom routing logic**        | Dynamic Routes              |
+
+## Next Steps
+
+1. **[Set up your first gateway](/ai-gateway/get-started/)** if you haven't already
+2. **Choose your integration method** based on your requirements
+3. **Configure advanced features** like [caching](/ai-gateway/configuration/caching/), [rate limiting](/ai-gateway/configuration/rate-limiting/), and [analytics](/ai-gateway/observability/)
+4. **Explore provider-specific documentation** for detailed implementation guides
+
+For more advanced configuration options, see the [Configuration](/ai-gateway/configuration/) section.

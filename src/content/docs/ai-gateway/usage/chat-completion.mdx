@@ -33,8 +33,9 @@ Specify the model using `{provider}/{model}` format. For example:
 import OpenAI from "openai";
 const client = new OpenAI({
 	apiKey: "YOUR_PROVIDER_API_KEY", // Provider API key
-  // NOTE: the OpenAI client automatically adds /chat/completions to the end of the URL, you should not add it yourself.
-	baseURL: "https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/compat",
+	// NOTE: the OpenAI client automatically adds /chat/completions to the end of the URL, you should not add it yourself.
+	baseURL:
+		"https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/compat",
 });
 
 const response = await client.chat.completions.create({
@@ -49,7 +50,7 @@ console.log(response.choices[0].message.content);
 
 ```bash
 curl -X POST https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/compat/chat/completions \
-  --header 'Authorization: Bearer {openai_token}' \
+  --header 'Authorization: Bearer {GOOGLE_GENERATIVE_AI_API_KEY}' \
   --header 'Content-Type: application/json' \
   --data '{
     "model": "google-ai-studio/gemini-2.0-flash",

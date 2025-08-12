@@ -22,12 +22,11 @@ This approach offers several key benefits:
 ## How it works
 
 With BYOK enabled, your workflow changes from:
-{/* TODO UPDATE THE USAGE HERE TO UNIVERSAL */}
 
 1. **Traditional approach**: Include API key in every request header
 
    ```bash
-   curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_slug}/openai/chat/completions \
+   curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/openai/chat/completions \
      -H "Authorization: Bearer YOUR_OPENAI_API_KEY" \
      -H "Content-Type: application/json" \
      -d '{"model": "gpt-4", "messages": [...]}'
@@ -35,7 +34,7 @@ With BYOK enabled, your workflow changes from:
 
 2. **BYOK approach**: Configure key once in dashboard, make requests without exposing keys
    ```bash
-   curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_slug}/openai/chat/completions \
+   curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/openai/chat/completions \
      -H "Content-Type: application/json" \
      -d '{"model": "gpt-4", "messages": [...]}'
    ```
