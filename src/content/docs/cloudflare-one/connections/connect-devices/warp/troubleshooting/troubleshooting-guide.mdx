@@ -10,7 +10,7 @@ import { MetaInfo, Render, Steps, Stream, Tabs, TabItem, Type } from "~/componen
 This guide helps you diagnose and resolve common issues with the Cloudflare WARP client. It covers how to troubleshoot the WARP client on desktop operating systems, including Windows, macOS, and Linux.
 
 1. **Before you start**: [Prerequisites](#prerequisites), permissions, [version control](#check-your-warp-version) and WARP basics.
-2. **Collect logs**: Through the [dashboard]() (with DEX remote capture) or the [command-line interface](#option-b-collect-logs-via-the-cli) (CLI) (`warp-diag`).
+2. **Collect logs**: Through the [dashboard](#option-a-collect-logs-via-the-cloudflare-dashboard) (with DEX remote capture) or the [command-line interface](#option-b-collect-logs-via-the-cli) (CLI) (`warp-diag`).
 3. **Review logs**: [Status](#check-warp-status), [settings](#check-warp-settings), [profile ID](#profile-id), [split tunnel](#exclude-mode-with-hostsips) configuration, and other settings.
 4. **Fix common misconfigurations**: [Profile mismatch](#wrong-profile-id), [split tunnel issues](#wrong-split-tunnel-configuration), [managed network issues](#review-your-managed-network-settings), [user group mismatch](#check-a-users-group-membership).
 5. **File a support ticket**: [How to file a ticket](#file-a-support-ticket) after you have exhausted your troubleshooting options.
@@ -39,7 +39,7 @@ Via the device:
 
 Via the Zero Trust dashboard:
 
-1. Log into [Zero Trust](https://one.dash.cloudflare.com/) > go to **My team** > **Devices**.
+1. Log into [Zero Trust](https://one.dash.cloudflare.com/) > go to **My Team** > **Devices**.
 2. Select the device you want to investigate.
 3. Find the device's WARP version under **Client version** in the side menu.
 
@@ -111,7 +111,7 @@ Refer to [WARP log retention window](/cloudflare-one/connections/connect-devices
 
 <Render file="dex/pcaps-download" />
 
-After you have your diagnostic files, go to [Review diagnostic logs](/cloudflare-one/connections/connect-devices/warp/troubleshooting/troubleshooting-guide/#2-review-diagnostics-logs) to continue troubleshooting.
+After you have your diagnostic files, go to [Review key files](/cloudflare-one/connections/connect-devices/warp/troubleshooting/troubleshooting-guide/#3-review-key-files) to continue troubleshooting.
 
 ### Option B: Collect logs via the CLI
 
@@ -125,7 +125,7 @@ To troubleshoot effectively, Cloudflare recommends that you recreate the steps w
 
 :::
 
-After you have your diagnostic files, go to [Review diagnostic logs](/cloudflare-one/connections/connect-devices/warp/troubleshooting/troubleshooting-guide/#2-review-diagnostics-logs) to continue troubleshooting.
+After you have your diagnostic files, go to [Review key files](/cloudflare-one/connections/connect-devices/warp/troubleshooting/troubleshooting-guide/#3-review-key-files) to continue troubleshooting.
 
 ## 3. Review key files
 
@@ -174,7 +174,7 @@ Merged configuration:
 (network policy)    WARP tunnel protocol: WireGuard
 (default)   Disabled for Wifi: false
 (default)   Disabled for Ethernet: false
-(reg defaults)  Resolve via: 1xx0x1011xx000000000f0x00000x11.cloudflare-gateway.com @ [1xx.1xx.1x.1, 1x01:1x00:1x00::1xx1] # The SNI Cloudflare will use and the IP address for DNS-over-HTTPSs (DoH) requests
+(reg defaults)  Resolve via: 1xx0x1011xx000000000f0x00000x11.cloudflare-gateway.com @ [1xx.1xx.1x.1, 1x01:1x00:1x00::1xx1] # The SNI Cloudflare will use and the IP address for DNS-over-HTTPS (DoH) requests
 (user set)  qlog logging: Enabled
 (default)   Onboarding: true # If true, the user sees an onboarding prompt when they first install the WARP client
 (network policy)    Exclude mode, with hosts/ips: # Split tunnel configuration
@@ -264,7 +264,7 @@ Refers to your [Local Domain Fallback](/cloudflare-one/connections/connect-devic
 
 ##### Allow Mode Switch
 
-Refers to the [Mode switch](/cloudflare-one/connections/connect-devices/warp/configure-warp/warp-settings/#mode-switch) setting. In the example file, the mode switch is enabled (`true`) which means the user has the option to switch between [Gateway with WARP](/cloudflare-one/connections/connect-devices/warp/configure-warp/warp-modes/#gateway-with-warp-default) mode and [Gateway with DNS-over-HTTP (DoH)](/cloudflare-one/connections/connect-devices/warp/configure-warp/warp-modes/#gateway-with-doh) mode.
+Refers to the [Mode switch](/cloudflare-one/connections/connect-devices/warp/configure-warp/warp-settings/#mode-switch) setting. In the example file, the mode switch is enabled (`true`) which means the user has the option to switch between [Gateway with WARP](/cloudflare-one/connections/connect-devices/warp/configure-warp/warp-modes/#gateway-with-warp-default) mode and [Gateway with DNS-over-HTTPs (DoH)](/cloudflare-one/connections/connect-devices/warp/configure-warp/warp-modes/#gateway-with-doh) mode.
 
 ```txt
 Allow Mode Switch: true
@@ -311,7 +311,7 @@ To verify that WARP is configured and working properly, review the following:
 
 ### Wrong profile ID
 
-A profile ID is a unique identifier assigned to each [device profile]((/cloudflare-one/connections/connect-devices/warp/configure-warp/device-profiles/)) in the Zero Trust dashboard, used to determine which configuration settings apply to a device.
+A profile ID is a unique identifier assigned to each [device profile](/cloudflare-one/connections/connect-devices/warp/configure-warp/device-profiles/) in the Zero Trust dashboard, used to determine which configuration settings apply to a device.
 
 If your organization has multiple device profiles defined in the Zero Trust dashboard, a device may be matched to an unexpected profile because:
 
@@ -333,7 +333,7 @@ To check that the applied device profile is the intended device profile:
 
 1. Go to [Zero Trust](https://one.dash.cloudflare.com/) > **Settings** > **WARP Client**.
 2. Find and select the device profile intended for the device.
-3. Under **Profile details** compare the displayed **Profile ID** with the `Profile ID` in the `warp-settings.txt` file.
+3. Under **Profile details**, compare the displayed **Profile ID** with the `Profile ID` in the `warp-settings.txt` file.
 
 If the profile ID displayed in the `warp-settings.txt` file does not match the intended device profile's ID shown in the dashboard:
 
@@ -382,7 +382,7 @@ If a user is having issues with a device profile, it may be because they are not
 
 To check that the user belongs to the intended group:
 
-1. Log into [Zero Trust]() > go to **My Team** > **Users**.
+1. Log into [Zero Trust](https://one.dash.cloudflare.com/) > go to **My Team** > **Users**.
 2. Select the user.
 3. Under **User Registry Identity**, select the user's name.
 4. The Get-identity endpoint lists all the groups the user belongs to.
@@ -493,5 +493,5 @@ Ken was on the train and had captive portal issues. `warp-diag` is attached.
 :::tip[Include scenario, timestamps, and steps taken to troubleshoot the issue]
 Refer to the following example of an ideal ticket description:
 
-Karen was on a train on July 17, 2025, at approximately 1:00 PM Central Time. She attempted to connect to a captive portal but received the following error message in Chrome: `error_message_details`. A warp-diag was collected immediately after and is attached.
+Karen was on a train on July 17, 2025, at approximately 1:00 PM Central Time. She attempted to connect to a captive portal but received the following error message in Chrome: `error_message_details`. A warp diag was collected immediately after and is attached.
 :::
