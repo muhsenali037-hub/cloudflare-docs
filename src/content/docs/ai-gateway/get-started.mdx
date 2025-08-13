@@ -6,7 +6,14 @@ sidebar:
   order: 2
 ---
 
-import { Details, DirectoryListing, LinkButton, Render } from "~/components";
+import {
+	Details,
+	DirectoryListing,
+	LinkButton,
+	Render,
+	TabItem,
+	Tabs,
+} from "~/components";
 
 In this guide, you will learn how to create your first AI Gateway. You can create multiple gateways to control different applications.
 
@@ -30,8 +37,29 @@ When setting up a new gateway, you can choose between an authenticated and unaut
 
 ## Send a request
 
-You can send a request to your gateway using the following cURL command to the chat completions end point:
+#### Chat completions endpoint
 
+<Tabs syncKey="aiGatewayGetStarted">
+<TabItem label="OpenAI SDK">
+
+```js
+import OpenAI from "openai";
+const client = new OpenAI({
+	apiKey: "YOUR_PROVIDER_API_KEY", // Provider API key
+	// NOTE: the OpenAI client automatically adds /chat/completions to the end of the URL, you should not add it yourself.
+	baseURL:
+		"https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/compat",
+});
+
+const response = await client.chat.completions.create({
+	model: "google-ai-studio/gemini-2.0-flash",
+	messages: [{ role: "user", content: "What is Cloudflare?" }],
+});
+console.log(response.choices[0].message.content);
+```
+
+</TabItem>
+<TabItem label="AI Gateway API">
 ```bash
 curl -X POST https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/compat/chat/completions \
   --header 'Authorization: Bearer {GOOGLE_GENERATIVE_AI_API_KEY}' \
@@ -45,9 +73,12 @@ curl -X POST https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/comp
       }
     ]
   }'
-```
+````
 
-There are multiple other ways to send a request to AI Gateway such as using [model provider endpoints](/ai-gateway/usage/providers/workersai/) directly, [websockets](/ai-gateway/usage/websockets-api) or [dynamic routes](/ai-gateway/features/dynamic-routing).
+</TabItem>
+</Tabs>
+
+There are multiple other ways to send a request to AI Gateway check out the [usage](/ai-gateway/usage/) section for more details.
 
 ## View analytics
 
@@ -65,6 +96,6 @@ The cost metric is an estimation based on the number of tokens sent and received
 
 ## Next steps
 
-- Learn more about [caching](/ai-gateway/configuration/caching/) for faster requests and cost savings and [rate limiting](/ai-gateway/configuration/rate-limiting/) to control how your application scales.
-- Explore how to specify model or provider [fallbacks](/ai-gateway/configuration/fallbacks/) for resiliency.
-- Learn how to use low-cost, open source models on [Workers AI](/ai-gateway/providers/workersai/) - our AI inference service.
+- Learn more about [caching](/ai-gateway/features/caching/) for faster requests and cost savings and [rate limiting](/ai-gateway/features/rate-limiting/) to control how your application scales.
+- Explore how to specify model or provider [fallbacks, ratelimits, A/B tests](/ai-gateway/features/dynamic-routing/) for resiliency.
+- Learn how to use low-cost, open source models on [Workers AI](/ai-gateway/usage/providers/workersai/) - our AI inference service.

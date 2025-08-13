@@ -3,6 +3,7 @@ title: Universal Endpoint
 pcx_content_type: get-started
 sidebar:
   order: 2
+  hidden: true
 ---
 
 import { Render, Badge } from "~/components";
@@ -88,7 +89,7 @@ type Env = {
 
 export default {
 	async fetch(request: Request, env: Env) {
-		return env.AI.gateway('my-gateway').run({
+		return env.AI.gateway("my-gateway").run({
 			provider: "workers-ai",
 			endpoint: "@cf/meta/llama-3.1-8b-instruct",
 			headers: {
