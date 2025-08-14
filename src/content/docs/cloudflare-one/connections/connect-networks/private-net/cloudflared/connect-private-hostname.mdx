@@ -43,8 +43,6 @@ As shown in Figure 2 below, the WARP client will now send `wiki.internal.local` 
 
 The initial resolved IP mechanism is required because Gateway's network engine operates at L3/L4 and can only see IPs (not hostnames) when processing the connection. Because the packet's destination IP falls within the designated CGNAT range, Gateway knows that it corresponds to a hostname route and can apply hostname-based policies. Traffic that passes your Gateway policies will route through Cloudflare Tunnel to the application's actual origin IP. When the initial resolved IP expires, WARP will send a new DNS request (Figure 1) to refresh the initial resolved IP.
 
-To learn more about hostname routing, refer to the [Cloudflare blog]().
-
 ## Connect to a private hostname
 
 This section covers how to enable remote access to a private hostname application using `cloudflared` and WARP.
