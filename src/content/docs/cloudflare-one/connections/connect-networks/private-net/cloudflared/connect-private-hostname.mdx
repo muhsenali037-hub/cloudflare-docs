@@ -9,18 +9,18 @@ sidebar:
 
 import { Render, Details, GlossaryTooltip } from "~/components";
 
-`cloudflared` can route to HTTP and non-HTTP applications on your private network using their private hostname (for example, `wiki.internal.local`). Private hostname routes are especially useful when the application has an unknown or ephemeral IP, which often occurs when infrastructure is provisioned by a third-party cloud provider.
-
-:::note[Only available on Enterprise plans]
-Hostname routes currently require Gateway resolver policies, an Enterprise-only feature. If you are on a Free or Pay-as-you-go plan, you will need to connect the application using [IP routes](/cloudflare-one/connections/connect-networks/private-net/cloudflared/connect-cidr/).
+:::note[Availability]
+Hostname routes are currently available in closed beta to Enterprise customers. To request access, contact your account team.
 :::
+
+`cloudflared` can route to HTTP and non-HTTP applications on your private network using their private hostname (for example, `wiki.internal.local`). Private hostname routes are especially useful when the application has an unknown or ephemeral IP, which often occurs when infrastructure is provisioned by a third-party cloud provider.
 
 ## How private hostname routing works
 
 Private hostname routing with Cloudflare Tunnel consists of three main components:
 
 - The WARP client installs on the user device and forwards network and DNS traffic from the device to Cloudflare Gateway.
-- Gateway resolver policies instruct Gateway to resolve the private hostname using your internal DNS resolver instead of the default public resolver.
+- Gateway resolves the private hostname using your internal DNS resolver instead of the default public resolver.
 - `cloudflared` installs on a host machine in your private network and proxies traffic from Cloudflare to your internal DNS resolver and internal applications.
 
 Figures 1 and 2 illustrate the flow of DNS and network traffic when a user connects to a private hostname (`wiki.internal.local`):
@@ -28,7 +28,7 @@ Figures 1 and 2 illustrate the flow of DNS and network traffic when a user conne
 ![Figure 1: DNS resolution for a private hostname](~/assets/images/cloudflare-one/connections/private-hostname-route-1.png "Figure 1: DNS resolution for private hostname")
 
 1. The WARP client sends the DNS query to the Gateway resolver for resolution.
-2. Based on the configured resolver policies, Gateway determines that `wiki.internal.local` should be resolved by a custom DNS resolver.
+2. Gateway determines that `wiki.internal.local` should be resolved by a custom DNS resolver.
 3. Gateway does a DNS lookup for `wiki.internal.local` through Cloudflare Tunnel, and the custom DNS resolver returns the origin IP (`10.0.0.5`).
 4. Rather than responding to the DNS query with the actual origin IP, Gateway responds with a random IP address from the following CGNAT range:
 	<Render file="gateway/egress-selector-cgnat-ips" />
@@ -76,9 +76,13 @@ To route your internal DNS resolver through Cloudflare Tunnel:
 
 5. Select **Create route**.
 
-### 3. Create a resolver policy
+### 3. (Optional) Create a resolver policy
 
-Configure Gateway to resolve the private hostname using your internal DNS resolver:
+:::note
+Only available on Enterprise plans
+:::
+
+Gateway will automatically resolve DNS queries using your internal DNS server as long as the DNS server is behind the same Cloudflare Tunnel as your application. If your DNS server is behind a different Cloudflare Tunnel (for example, if you separated DNS traffic into its own tunnel for [high availability](/cloudflare-one/connections/connect-networks/configure-tunnels/tunnel-availability/system-requirements/#private-dns)), then you need to point Gateway to the correct tunnel and DNS server.
 
 1. [Create a Gateway resolver policy](/cloudflare-one/policies/gateway/resolver-policies/#create-a-resolver-policy) that matches the private hostname for which you are establishing the route:
 
@@ -86,9 +90,9 @@ Configure Gateway to resolve the private hostname using your internal DNS resolv
    | -------- | -------- | ---------------------- |
    | Host     | in       | `wiki.internal.local`  |
 
-2. Under **Configure custom DNS resolvers**, enter the IPv4 and/or IPv6 address of your internal DNS resolver. The dropdown menu will not populate until you type in the full IP address.
+2. Under **Configure custom DNS resolvers**, enter the IPv4 and/or IPv6 address of your internal DNS server. The dropdown menu will not populate until you type in the full IP address.
 
-3. From the dropdown menu, select the `- Private` routing option and the [virtual network](/cloudflare-one/connections/connect-networks/private-net/cloudflared/tunnel-virtual-networks/) where the DNS resolver is located.
+3. From the dropdown menu, select the `- Private` routing option and the [virtual network](/cloudflare-one/connections/connect-networks/private-net/cloudflared/tunnel-virtual-networks/) where the DNS server is located.
 
 ### 4. Set up the client
 
@@ -176,13 +180,23 @@ Access policies and Gateway network policies only support hostname-based filteri
 
 ### 7. Test the connection
 
-End users can now reach the application by going to its private hostname. For example, to test an HTTP application, open a browser and go to `wiki.internal.local`.
+End users can now reach the application by going to its private hostname. For example, to test an HTTP application, open a terminal on a WARP device and run
+```sh
+curl -v4 http://wiki.internal.local
+```
+```sh output
+*   Trying 100.80.77.135:80...
+* Connected to wiki.internal.local (100.80.77.135) port 80
+...
+```
 
-If you [enabled the Gateway proxy](#enable-the-gateway-proxy), you can view the traffic in your [Gateway activity logs](/cloudflare-one/insights/logs/gateway-logs/).
+The output should show a successful connection to an <GlossaryTooltip term="initial resolved IP">initial resolved IP</GlossaryTooltip>.
+
+If you [enabled the Gateway proxy](#enable-the-gateway-proxy), you can view the traffic in your [Gateway activity logs](/cloudflare-one/insights/logs/gateway-logs/). You can also check your [tunnel logs](/cloudflare-one/connections/connect-networks/monitor-tunnels/logs/) to confirm that requests are routing to the application.
 
 ### Troubleshooting
 
-:::note
+:::note[Common misconfigurations]
 Routing issues are the most common type of misconfiguration. Make sure to check WARP Split Tunnels and Local Domain Fallback as described in [Step 5](#5-route-traffic-through-warp).
 :::
 
@@ -198,13 +212,28 @@ The table below summarizes the Cloudflare One products that are compatible with 
 
 ### Device connectivity
 
-End users can connect to private hostnames from the following device on-ramps:
+End users can connect to private hostnames using the following traffic on-ramps:
 
 <Render file="gateway/egress-selector-onramps" />
 
+#### WARP Connector and Magic WAN routes
+
+If devices are behind WARP Connector or Magic WAN, you may need to update the routing table on your device or router to send traffic to Gateway. Ensure that traffic to the following destination IPs route through WARP Connector / Magic WAN:
+
+	- <GlossaryTooltip term="initial resolved IP">Initial resolved IP</GlossaryTooltip> CGNAT range:
+		<Render file="gateway/egress-selector-cgnat-ips" />
+	- Private network CIDR where the application is located (for example, `10.0.0.0/8`)
+	- Internal DNS resolver IP
+	- Gateway DNS resolver IPs:
+		- `172.64.36.1`
+		- `172.64.36.2`
+		:::note
+		Magic WAN customers will also need to configure their DNS resolver to point to these Gateway resolver IPs.
+		:::
+
 ### Private network connectivity
 
-To route to private applications using hostnames instead of IPs, connect your infrastructure to Cloudflare using a supported traffic off-ramp:
+Private hostname routing only works for applications connected with `cloudflared`. Other traffic off-ramps require IP-based routes.
 
 | Connector                                                                             | Compatibility |
 | ------------------------------------------------------------------------------------------ | ------------- |

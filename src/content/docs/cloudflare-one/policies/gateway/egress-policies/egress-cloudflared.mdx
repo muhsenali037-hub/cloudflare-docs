@@ -9,6 +9,10 @@ sidebar:
 
 import { Render, Details, GlossaryTooltip } from "~/components";
 
+:::note[Availability]
+Hostname routes are currently available in closed beta to Enterprise customers. To request access, contact your account team.
+:::
+
 <Render file="gateway/egress-selector-warp-version" />
 
 Cloudflare Tunnel can be used for source IP anchoring when you want to use existing egress IPs instead of purchasing [Cloudflare dedicated egress IPs](/cloudflare-one/policies/gateway/egress-policies/dedicated-egress-ips/). Some third-party websites may have an Access Control List (ACL) that only allow connections from certain source IPs. If you already a non-Cloudflare IP on their allowlist (such an egress IP provided by an ISP or a cloud provider like AWS), you can configure `cloudflared` to anchor user traffic to the same IPs that you use today.
@@ -61,23 +65,22 @@ To route a public hostname through Cloudflare Tunnel:
 
 ## 3. Route network traffic through WARP
 
-If your traffic is onboarded using WARP, ensure that traffic to the following IP addresses route through the WARP tunnel to Gateway:
+In your WARP [Split Tunnels](/cloudflare-one/connections/connect-devices/warp/configure-warp/route-traffic/split-tunnels/) configuration, route the following IP addresses through the WARP tunnel to Gateway.
 
-- <GlossaryTooltip term="initial resolved IP">Initial resolved IP</GlossaryTooltip> CGNAT range:
+### Initial resolved IPs
+
+When users connect to a public hostname route, Gateway will assign an <GlossaryTooltip term="initial resolved IP">initial resolved IP</GlossaryTooltip> to the DNS query from the following range:
 	<Render file="gateway/egress-selector-cgnat-ips" />
-- Private network CIDR block
 
-### Route initial resolved IPs
-
-When users connect to a public hostname route, Gateway will assign an <GlossaryTooltip term="initial resolved IP">initial resolved IP</GlossaryTooltip> to the DNS query. The initial resolved IP is required because Gateway's network engine operates at L3/L4 and can only see IPs (not hostnames) when processing the connection. If a packet's destination IP falls within the initial resolved IP CGNAT range, Gateway knows that the IP maps to a public hostname route and sends the traffic down the corresponding Cloudflare Tunnel.
+The initial resolved IP is required because Gateway's network engine operates at L3/L4 and can only see IPs (not hostnames) when processing the connection. If a packet's destination IP falls within the initial resolved IP CGNAT range, Gateway knows that the IP maps to a public hostname route and sends the traffic down the corresponding Cloudflare Tunnel.
 
 To route initial resolved IPs through WARP:
 
 <Render file="gateway/egress-selector-split-tunnels" />
 
-### Route private network IPs
+### Private network IPs
 
-To route your private network's CIDR block through WARP, refer to [Connect a private network](/cloudflare-one/connections/connect-networks/private-net/cloudflared/connect-cidr/#3-route-private-network-ips-through-warp).
+Your private network's CIDR block should also route through the WARP tunnel. For a detailed configuration example, refer to [Connect a private network](/cloudflare-one/connections/connect-networks/private-net/cloudflared/connect-cidr/#3-route-private-network-ips-through-warp).
 
 ## 4. (Optional) Configure network policies
 
@@ -93,3 +96,9 @@ You can build [Gateway network policies](/cloudflare-one/policies/gateway/networ
 	| SNI            | in       | `app.bank.com` | Block  |
 
 Gateway does not currently support hostname-based filtering for traffic on non-443 ports. To block traffic to `app.bank.com` on all ports, you will need to use the [Destination IP](/cloudflare-one/policies/gateway/network-policies/#destination-ip) selector and specify the public IP space of `app.bank.com`.
+
+## 5. Test the connection
+
+From a WARP device, open a browser and go to `app.bank.com`.
+
+The traffic will appear in your [Gateway activity logs](/cloudflare-one/insights/logs/gateway-logs/); Gateway DNS logs will show that `app.bank.com` resolved to an <GlossaryTooltip term="initial resolved IP">initial resolved IP</GlossaryTooltip>, and network logs will show requests destined to that initial resolved IP. You can also check [`cloudflared` logs](/cloudflare-one/connections/connect-networks/monitor-tunnels/logs/) to confirm that requests are routing to the tunnel.
