@@ -6,11 +6,11 @@ products:
 date: 2025-08-19 12:00:00 UTC
 ---
 
-[Queues](/queues/) can now subscribe to events from other Cloudflare services (for example, [Workers KV](/kv/), [Workers AI](/workers-ai), [Workers](/workers)), allowing you to build custom workflows, integrations, and logic in response to account activity.
+You can now subscribe to events from other Cloudflare services (for example, [Workers KV](/kv/), [Workers AI](/workers-ai), [Workers](/workers)) and consume those events via [Queues](/queues/), allowing you to build custom workflows, integrations, and logic in response to account activity.
 
 ![Event subscriptions architecture](~/assets/images/queues/queues-event-subscriptions.png)
 
-Event subscriptions allow you to receive messages when events occur across your Cloudflare account. Cloudflare products can publish structured events to a queue, which you can then consume with [Workers](/workers/) or [HTTP pull consumers](/queues/configuration/pull-consumers/).
+Event subscriptions allow you to receive messages when events occur across your Cloudflare account. Cloudflare products can publish structured events to a queue, which you can then consume with [Workers](/workers/) or [pull via HTTP from anywhere](/queues/configuration/pull-consumers/).
 
 To create a subscription, use the dashboard or [Wrangler](/workers/wrangler/commands/#subscription-create):
 
