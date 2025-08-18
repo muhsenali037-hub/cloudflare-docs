@@ -2,44 +2,64 @@
 pcx_content_type: how-to
 title: Using a dynamic route
 sidebar:
-  order: 3
+  order: 2
 ---
 
-Using a dynamic route is really simple, you just have to replace the provider and model name while querying ai gateway to that of your smart route while prepending `dynamic-route`.
+:::caution
+
+Ensure your gateway has [authentication](/ai-gateway/configuration/authentication/) turned on and you have your upstream providers keys stored with [BYOK](/ai-gateway/configuration/bring-your-own-keys/)
+
+:::
 
 ## Examples
+
+### OpenAI SDK
+
+```js
+import OpenAI from "openai";
+
+const cloudflareToken = "CF_AIG_TOKEN";
+const accountId = "{account_id}";
+const gatewayId = "{gateway_id}";
+const baseURL = `https://gateway.ai.cloudflare.com/v1/${accountId}/${gatewayId}`;
+
+const openai = new OpenAI({
+	apiKey: cloudflareToken,
+	baseURL,
+});
+
+try {
+	const model = "dynamic/<your-dynamic-route-name>";
+	const messages = [{ role: "user", content: "What is a neuron?" }];
+	const chatCompletion = await openai.chat.completions.create({
+		model,
+		messages,
+	});
+	const response = chatCompletion.choices[0].message;
+	console.log(response);
+} catch (e) {
+	console.error(e);
+}
+```
 
 ### Fetch
 
 ```bash
-curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id} \
+curl -X POST https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/compat/chat/completions \
+  --header 'cf-aig-authorization: Bearer {CF_AIG_TOKEN}' \
   --header 'Content-Type: application/json' \
-  --data '[
-  {
-    "provider": "dynamic-route",
-    "endpoint": "<name-of-your-route>",
-    "headers": {
-      "Authorization": "Bearer {cloudflare_token}",
-      "Content-Type": "application/json"
-    },
-    "query": {
-      "messages": [
-        {
-          "role": "system",
-          "content": "You are a friendly assistant"
-        },
-        {
-          "role": "user",
-          "content": "What is Cloudflare?"
-        }
-      ]
-    }
-  },
+  --data '{
+    "model": "dynamic/gemini-2.0-flash",
+    "messages": [
+      {
+        "role": "user",
+        "content": "What is Cloudflare?"
+      }
+    ]
+  }'
 ```
 
 ### Workers
-
-TODO: Fix this example
 
 ```ts title="index.ts"
 export interface Env {
@@ -48,13 +68,12 @@ export interface Env {
 
 export default {
 	async fetch(request: Request, env: Env) {
-		return env.AI.gateway("default").run({
-			provider: "dynamice-route",
-            endpoint: "<name-of-your-route>"
-			headers: {
-				authorization: "Bearer",
-			},
+		const response = await env.AI.gateway("dfD").run({
+			provider: "compat",
+			endpoint: "chat/completion",
+			headers: {},
 			query: {
+				model: "dynamic/support",
 				messages: [
 					{
 						role: "user",
@@ -63,42 +82,7 @@ export default {
 				],
 			},
 		});
+		return Response(response);
 	},
 };
-```
-
-### OpenAI SDK
-
-TODO: FIX this example
-:::note
-Ensure that all the models in your dynamic route are openai compatible before using this SDK
-:::
-
-```js
-import OpenAI from "openai";
-
-const cloudflareKey = "my api key";
-const accountId = "{account_id}";
-const gatewayId = "{gateway_id}";
-const baseURL = `https://gateway.ai.cloudflare.com/v1/${accountId}/${gatewayId}`;
-
-const openai = new OpenAI({
-	apiKey,
-	baseURL,
-});
-
-try {
-	const model = "dynamic-route/<your-dynamic-route-name>";
-	const messages = [{ role: "user", content: "What is a neuron?" }];
-	const maxTokens = 100;
-	const chatCompletion = await openai.chat.completions.create({
-		model,
-		messages,
-		max_tokens: maxTokens,
-	});
-	const response = chatCompletion.choices[0].message;
-	console.log(response);
-} catch (e) {
-	console.error(e);
-}
 ```

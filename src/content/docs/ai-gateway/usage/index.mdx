@@ -22,9 +22,10 @@ https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/compat/chat/compl
 **Key benefits:**
 
 - Drop-in replacement for OpenAI API
-- Works with existing OpenAI SDKs
+- Works with existing OpenAI SDKs and other OpenAI compliant clients
 - Switch between providers by changing the `model` parameter
 - No schema modifications required
+- Dynamic Routing - Define complex routing scenarios requiring conditional logic, conduct A/B tests, set rate / budget limits etc
 
 [Learn more about OpenAI compatibility →](/ai-gateway/usage/chat-completion/)
 
@@ -44,7 +45,7 @@ https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/{provider}
 - [Workers AI](/ai-gateway/usage/providers/workersai/) - Cloudflare's inference platform
 - [AWS Bedrock](/ai-gateway/usage/providers/bedrock/) - Amazon's managed AI service
 - [Azure OpenAI](/ai-gateway/usage/providers/azureopenai/) - Microsoft's OpenAI service
-- [And 14+ more providers](/ai-gateway/usage/providers/)
+- [and more...](/ai-gateway/usage/providers/)
 
 ### WebSockets API <Badge text="beta" variant="tip" size="small" />
 
@@ -62,21 +63,6 @@ wss://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/
 - Reduced connection overhead
 
 [Learn more about WebSockets API →](/ai-gateway/usage/websockets-api/)
-
-### Dynamic Routes <Badge text="beta" variant="tip" size="small" />
-
-For complex routing scenarios requiring conditional logic, user-based routing, or A/B testing, use Dynamic Routes. This feature enables sophisticated request routing flows without code changes through a visual interface.
-
-**Key benefits:**
-
-- Visual flow-based routing configuration
-- User-based and geographic routing
-- Dynamic rate limiting with fallbacks
-- A/B testing and fractional traffic splitting
-- Context-aware routing based on request content
-- No code changes required for routing logic
-
-[Learn more about Dynamic Routes →](/ai-gateway/features/dynamic-routing/)
 
 ## Quick Start Examples
 
@@ -98,35 +84,6 @@ const response = await client.chat.completions.create({
 });
 ```
 
-### Dynamic Route Example
-
-```bash
-curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id} \
-  --header 'Content-Type: application/json' \
-  --data '[
-  {
-    "provider": "dynamic-route",
-    "endpoint": "<name-of-your-route>",
-    "headers": {
-      "Authorization": "Bearer {cloudflare_token}",
-      "Content-Type": "application/json"
-    },
-    "query": {
-      "messages": [
-        {
-          "role": "system",
-          "content": "You are a friendly assistant"
-        },
-        {
-          "role": "user",
-          "content": "What is Cloudflare?"
-        }
-      ]
-    }
-  }
-]'
-```
-
 ## Choosing the Right Integration
 
 | Use Case                        | Recommended Approach        |
@@ -135,7 +92,6 @@ curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id} \
 | **Existing OpenAI integration** | OpenAI-Compatible Endpoint  |
 | **Provider-specific features**  | Provider-Specific Endpoints |
 | **Real-time/streaming apps**    | WebSockets API              |
-| **Custom routing logic**        | Dynamic Routes              |
 
 ## Next Steps
 

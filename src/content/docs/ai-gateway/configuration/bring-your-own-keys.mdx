@@ -1,5 +1,5 @@
 ---
-title: Bring your own keys
+title: BYOK (Store Keys)
 pcx_content_type: navigation
 sidebar:
   order: 2
@@ -12,46 +12,11 @@ import { CardGrid, LinkTitleCard } from "~/components";
 
 Bring your own keys (BYOK) is a feature in Cloudflare AI Gateway that allows you to securely store your AI provider API keys directly in the Cloudflare dashboard. Instead of including API keys in every request to your AI models, you can configure them once in the dashboard and reference them in your gateway configuration.
 
-This approach offers several key benefits:
+The keys are stored securely with [Secret Store](/secrets-store/) and allows for
 
-- **Enhanced security**: API keys are stored securely in Cloudflare's infrastructure and never exposed in your application code or logs
-- **Simplified development**: No need to manage API keys in your application environment or pass them with each request
-- **Centralized management**: Update API keys for all your applications from a single location in the dashboard
-- **Reduced risk**: Eliminates the possibility of accidentally exposing API keys in client-side code or version control
-
-## How it works
-
-With BYOK enabled, your workflow changes from:
-
-1. **Traditional approach**: Include API key in every request header
-
-   ```bash
-   curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/openai/chat/completions \
-     -H "Authorization: Bearer YOUR_OPENAI_API_KEY" \
-     -H "Content-Type: application/json" \
-     -d '{"model": "gpt-4", "messages": [...]}'
-   ```
-
-2. **BYOK approach**: Configure key once in dashboard, make requests without exposing keys
-   ```bash
-   curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/openai/chat/completions \
-     -H "Content-Type: application/json" \
-     -d '{"model": "gpt-4", "messages": [...]}'
-   ```
-
-## Supported providers
-
-BYOK currently supports the following AI providers:
-
-{/* TODO UPDATE */}
-
-- **OpenAI**: GPT models, DALL-E, Whisper, and other OpenAI services
-- **Anthropic**: Claude models and related services
-- **Google AI**: Gemini models and Google AI services
-- **Azure OpenAI**: Azure-hosted OpenAI models
-- **AWS Bedrock**: Amazon Bedrock models
-- **Cohere**: Cohere language models
-- **Hugging Face**: Hugging Face Inference API
+- Secure storage and limit exposure
+- Easier key rotation
+- Rate limit, budget limit and other restrictions with [Dynamic Routes](/ai-gateway/features/dynamic-routing/)
 
 ## Setting up BYOK
 
@@ -68,19 +33,11 @@ BYOK currently supports the following AI providers:
 1. Log into the [Cloudflare dashboard](https://dash.cloudflare.com/) and select your account.
 2. Go to **AI** > **AI Gateway**.
 3. Select your gateway or create a new one.
-4. Navigate to the **API Keys** section.
+4. Navigate to the **Provider Keys** section.
 5. Click **Add API Key**.
 6. Select your AI provider from the dropdown.
 7. Enter your API key and optionally provide a description.
 8. Click **Save**.
-
-:::note[Security best practices]
-
-- API keys are encrypted at rest and in transit
-- Keys are never logged or exposed in response headers
-- You can rotate keys at any time without code changes
-- Consider using separate keys for development and production environments
-  :::
 
 ### Update your applications
 
@@ -89,6 +46,28 @@ Once you've configured your API keys in the dashboard:
 1. **Remove API keys from your code**: Delete any hardcoded API keys or environment variables
 2. **Update request headers**: Remove authorization headers from your requests
 3. **Test your integration**: Verify that requests work without including API keys
+
+## Example
+
+With BYOK enabled, your workflow changes from:
+
+1. **Traditional approach**: Include API key in every request header
+
+   ```bash
+   curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/openai/chat/completions \
+     -H 'cf-aig-authorization: Bearer {CF_AIG_TOKEN}' \
+     -H "Authorization: Bearer YOUR_OPENAI_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"model": "gpt-4", "messages": [...]}'
+   ```
+
+2. **BYOK approach**: Configure key once in dashboard, make requests without exposing keys
+   ```bash
+   curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/openai/chat/completions \
+     -H 'cf-aig-authorization: Bearer {CF_AIG_TOKEN}' \
+     -H "Content-Type: application/json" \
+     -d '{"model": "gpt-4", "messages": [...]}'
+   ```
 
 ## Managing API keys
 
