@@ -110,10 +110,10 @@ In your WARP [device profiles](/cloudflare-one/connections/connect-devices/warp/
 
 - <GlossaryTooltip term="initial resolved IP">Initial resolved IP</GlossaryTooltip> CGNAT range:
 	<Render file="gateway/egress-selector-cgnat-ips" />
-- Private network CIDR where the application is located (for example, `10.0.0.0/8`)
+- Private network CIDR where the application is located
 - Internal DNS resolver IP
 
-For more details on configuring Split Tunnels, refer to [Route private network IPs through WARP](/cloudflare-one/connections/connect-networks/private-net/cloudflared/connect-cidr/#3-route-private-network-ips-through-warp).
+For example, if you are using the default Split Tunnels Exclude configuration and your application and DNS resolver have private IPs in the range `10.0.0.0/8`, delete `100.64.0.0/10` and `10.0.0.0/8` from the Split Tunnels list. We recommend adding back the IPs that are not explicitly used by your network — refer to our [Split Tunnels calculator](/cloudflare-one/connections/connect-networks/private-net/cloudflared/connect-cidr/#3-route-private-network-ips-through-warp) for details.
 
 #### Local Domain Fallback
 
@@ -180,27 +180,59 @@ Access policies and Gateway network policies only support hostname-based filteri
 
 ### 7. Test the connection
 
-End users can now reach the application by going to its private hostname. For example, to test an HTTP application, open a terminal on a WARP device and run
-```sh
-curl -v4 http://wiki.internal.local
-```
-```sh output
-*   Trying 100.80.77.135:80...
-* Connected to wiki.internal.local (100.80.77.135) port 80
-...
-```
+WARP users can now reach the application by going to its private hostname. For example, to connect to a private web application, open a browser and go to `wiki.internal.local`.
 
-The output should show a successful connection to an <GlossaryTooltip term="initial resolved IP">initial resolved IP</GlossaryTooltip>.
+#### Troubleshooting
 
-If you [enabled the Gateway proxy](#enable-the-gateway-proxy), you can view the traffic in your [Gateway activity logs](/cloudflare-one/insights/logs/gateway-logs/). You can also check your [tunnel logs](/cloudflare-one/connections/connect-networks/monitor-tunnels/logs/) to confirm that requests are routing to the application.
+You can run the following tests to check if private hostname routing is properly configured.
 
-### Troubleshooting
+1. From the WARP device, confirm that you can successfully resolve the private hostname using your internal DNS server:
 
-:::note[Common misconfigurations]
-Routing issues are the most common type of misconfiguration. Make sure to check WARP Split Tunnels and Local Domain Fallback as described in [Step 5](#5-route-traffic-through-warp).
-:::
+		```sh
+		nslookup wiki.internal.local 10.0.0.1
+		```
 
-For a step-by-step troubleshooting procedure, refer to [Troubleshoot private network connectivity](/cloudflare-one/connections/connect-networks/troubleshoot-tunnels/private-networks/).
+		```sh output
+		Server:		10.0.0.1
+		Address:	10.0.0.1#53
+
+		Name:	wiki.internal.local
+		Address: 10.0.0.5
+		```
+
+		If the DNS lookup fails, it means that WARP cannot connect to your internal DNS server through `cloudflared`. Check that you have a [tunnel route](#2-connect-the-dns-server-to-cloudflare) for the internal DNS server IP. Also, confirm that the DNS server IP [routes through the WARP tunnel](#split-tunnels).
+
+
+2. Run a standard `nslookup` for the private hostname:
+
+		```sh
+		nslookup wiki.internal.local
+		```
+
+		```sh output
+		Server:		127.0.2.2
+		Address:	127.0.2.2#53
+
+		Non-authoritative answer:
+		Name:	wiki.internal.local
+		Address: 100.80.200.48
+		```
+
+		The query should resolve using [WARP's DNS proxy](/cloudflare-one/connections/connect-devices/warp/configure-warp/route-traffic/warp-architecture/#dns-traffic) and return a Gateway <GlossaryTooltip term="initial resolved IP">initial resolved IP</GlossaryTooltip>. If the query fails to resolve or returns a different IP, check your [Local Domain Fallback configuration](#local-domain-fallback) and [Gateway resolver policies](#3-optional-create-a-resolver-policy).
+
+3. When you connect to the application using its private hostname, the device should make a connection to the <GlossaryTooltip term="initial resolved IP">initial resolved IP</GlossaryTooltip>:
+		```sh
+		curl -v4 http://wiki.internal.local
+		```
+		```sh output
+		*   Trying 100.80.200.48:80...
+		* Connected to wiki.internal.local (100.80.200.48) port 80
+		...
+		```
+
+		You can check your [tunnel logs](/cloudflare-one/connections/connect-networks/monitor-tunnels/logs/) to confirm that requests are routing to the application's private IP.
+
+		For a generic WARP-to-Tunnel troubleshooting procedure, refer to [Troubleshoot private network connectivity](/cloudflare-one/connections/connect-networks/troubleshoot-tunnels/private-networks/).
 
 ## Supported on-ramps/off-ramps
 

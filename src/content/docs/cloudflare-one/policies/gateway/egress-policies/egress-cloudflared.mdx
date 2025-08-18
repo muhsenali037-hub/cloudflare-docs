@@ -101,4 +101,4 @@ Gateway does not currently support hostname-based filtering for traffic on non-4
 
 From a WARP device, open a browser and go to `app.bank.com`.
 
-The traffic will appear in your [Gateway activity logs](/cloudflare-one/insights/logs/gateway-logs/); Gateway DNS logs will show that `app.bank.com` resolved to an <GlossaryTooltip term="initial resolved IP">initial resolved IP</GlossaryTooltip>, and network logs will show requests destined to that initial resolved IP. You can also check [`cloudflared` logs](/cloudflare-one/connections/connect-networks/monitor-tunnels/logs/) to confirm that requests are routing to the tunnel.
+You can search for `app.bank.com` in your [Gateway DNS logs](/cloudflare-one/insights/logs/gateway-logs/); the **DNS response details** section should show the public resolved IPs as well as an <GlossaryTooltip term="initial resolved IP">initial resolved IP</GlossaryTooltip>. You can also check your [Cloudflare Tunnel logs](/cloudflare-one/connections/connect-networks/monitor-tunnels/logs/) to confirm that requests are routing through the tunnel to the public resolved IPs.
