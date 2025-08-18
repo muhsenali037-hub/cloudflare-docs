@@ -7,8 +7,8 @@ sidebar:
     badge: beta
 head:
   - tag: title
-    content: Get started with Cloudflare AI Audit
-description: Learn how to set up AI Audit.
+    content: Get started with Cloudflare AI Crawl Control
+description: Learn how to set up AI Crawl Control.
 ---
 
 import { Details, Render, Steps, Tabs, TabItem, GlossaryTooltip } from "~/components";
@@ -16,7 +16,7 @@ import { Details, Render, Steps, Tabs, TabItem, GlossaryTooltip } from "~/compon
 This guide instructs you on how to:
 
 - View AI crawlers that are interacting with pages in your domain (a [Cloudflare zone](/fundamentals/concepts/accounts-and-zones/#zones)).
-- Use AI Audit to block individual crawlers from accessing your content.
+- Use AI Crawl Control to block individual crawlers from accessing your content.
 
 ## Prerequisites
 
@@ -33,14 +33,14 @@ To only block specific AI crawlers:
 
 {/* prettier-ignore */}
 <Steps>
-1. Go to **AI Audit**.
+1. Go to **AI Crawl Control**.
 2. From the **AI Crawlers** tab, go to the list of AI crawlers.
 3. Review the AI crawlers that are accessing your domain.
 4. From the **Block** column, select the option **Block**.
 </Steps>
 
 :::note[Quality of AI crawler detection]
-On the free plan, AI Audit identifies AI crawlers based on their [user agent strings](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/User-Agent). This enables AI Audit to detect easy-to-detect (well-known) AI crawlers.
+On the free plan, AI Crawl Control identifies AI crawlers based on their [user agent strings](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/User-Agent). This enables AI Crawl Control to detect easy-to-detect (well-known) AI crawlers.
 
 Upgrade your plan to enable a more thorough detection using Cloudflare's [Bot Management detection ID](/bots/reference/bot-management-variables/#ruleset-engine-fields) field.
 :::
@@ -51,7 +51,7 @@ To only block specific AI crawlers:
 
 {/* prettier-ignore */}
 <Steps>
-1. Go to **AI Audit**.
+1. Go to **AI Crawl Control**.
 2. From the **AI Crawlers** tab, go to the list of AI crawlers.
 3. Review key information such as:
    - Bot operator
@@ -63,7 +63,7 @@ To only block specific AI crawlers:
 </TabItem>
 </Tabs>
 
-For more information, refer to [Manage AI crawlers](/ai-audit/features/manage-ai-crawlers/).
+For more information, refer to [Manage AI crawlers](/ai-crawl-control/features/manage-ai-crawlers/).
 
 You can also create more complex rules when taking action on AI crawlers, using [Cloudflare WAF](/waf/). For more information on creating more specific rules, refer to [Create a custom rule in the dashboard](/waf/custom-rules/create-dashboard/).
 
@@ -75,7 +75,7 @@ You can also create more complex rules when taking action on AI crawlers, using 
 Review the AI crawlers detected on your site.
 
 <Steps>
-1. Go to **AI Audit**.
+1. Go to **AI Crawl Control**.
 2. From the **Metrics** tab, view key metrics on AI crawlers.
 </Steps>
 </TabItem>
@@ -85,13 +85,13 @@ Note that on free plans, the **Metrics** tab only displays metrics for the past 
 
 ## Plan comparison
 
-<Render file="plan-comparison" product="ai-audit" />
+<Render file="plan-comparison" product="ai-crawl-control" />
 
 ## Next steps
 
-- [Manage AI crawlers](/ai-audit/features/manage-ai-crawlers/) with granular allow/block controls.
-- [Analyze AI traffic](/ai-audit/features/analyze-ai-traffic/) to understand crawler patterns and content popularity.
-- [Explore pay per crawl](/ai-audit/features/pay-per-crawl/what-is-pay-per-crawl/) to test content monetization options (private beta).
+- [Manage AI crawlers](/ai-crawl-control/features/manage-ai-crawlers/) with granular allow/block controls.
+- [Analyze AI traffic](/ai-crawl-control/features/analyze-ai-traffic/) to understand crawler patterns and content popularity.
+- [Explore pay per crawl](/ai-crawl-control/features/pay-per-crawl/what-is-pay-per-crawl/) to test content monetization options (private beta).
 
 ## Related resources
 

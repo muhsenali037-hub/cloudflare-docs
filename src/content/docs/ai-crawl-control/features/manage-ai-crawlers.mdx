@@ -7,12 +7,12 @@ sidebar:
 
 import { Steps, GlossaryTooltip, Tabs, TabItem, Example } from "~/components";
 
-AI Audit enables you to take specific action for each AI crawler.
+AI Crawl Control enables you to take specific action for each AI crawler.
 
 To manage AI crawlers:
 
 1. Log in to the [Cloudflare dashboard](https://dash.cloudflare.com/), and select your account and domain.
-2. Go to **AI Audit**.
+2. Go to **AI Crawl Control**.
 3. Go to the **AI Crawlers** tab.
 
 ## Review AI crawler activity
@@ -36,13 +36,13 @@ The **AI Crawlers** tab displays a table of AI crawlers that are requesting acce
 | Category              | The category of the AI crawler. Refer to [Verified bot categories](/bots/concepts/bot/verified-bots/categories/).                                                   |
 | Requests              | The number of times the AI crawler has requested to crawl your content.                                                                                             |
 | Robots.txt violations | The number of times the AI crawler has violated your <GlossaryTooltip term="robots.txt">`robots.txt`</GlossaryTooltip> file.                                        |
-| Action                | The action you wish to take for the AI crawler. Refer to [Take action for each AI crawler](/ai-audit/features/manage-ai-crawlers/#take-action-for-each-ai-crawler). |
+| Action                | The action you wish to take for the AI crawler. Refer to [Take action for each AI crawler](/ai-crawl-control/features/manage-ai-crawlers/#take-action-for-each-ai-crawler). |
 
 </TabItem>
 </Tabs>
 
 :::note[Quality of AI crawler detection]
-On the free plan, AI Audit identifies AI crawlers based on their [user agent strings](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/User-Agent). This enables AI Audit to detect easy-to-detect (well-known) AI crawlers.
+On the free plan, AI Crawl Control identifies AI crawlers based on their [user agent strings](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/User-Agent). This enables AI Crawl Control to detect easy-to-detect (well-known) AI crawlers.
 
 Upgrade your plan to enable a more thorough detection using Cloudflare's [Bot Management detection ID](/bots/reference/bot-management-variables/#ruleset-engine-fields) field.
 :::
@@ -77,7 +77,7 @@ For each AI crawler, you can take one of three actions: allow, charge, or block.
 - **Summary:** You can allow an AI crawler to scrape your content.
 - **When to use:** Allow AI crawlers that offer services which provide value through citations, referrals, or existing agreements.
 - **Implementation:** From the **Actions** column, select **Allow**.
-Note that you can still choose to [Enforce `robots.txt`](/ai-audit/features/manage-ai-crawlers/#take-action-for-each-ai-crawler).
+Note that you can still choose to [Enforce `robots.txt`](/ai-crawl-control/features/manage-ai-crawlers/#take-action-for-each-ai-crawler).
 
 For more details on how this rule interacts with other Cloudflare settings, refer to [How it works](/bots/concepts/bot/#how-it-works).
 
@@ -96,7 +96,7 @@ For more details on how this rule interacts with other Cloudflare settings, refe
 - **When to use:** Charge AI crawlers when your content has training value, and you want to explore monetization options
 - **Implementation:** From the **Actions** column, select **Charge**.
 
-For more information, refer to [What is Pay Per Crawl?](/ai-audit/features/pay-per-crawl/what-is-pay-per-crawl/).
+For more information, refer to [What is Pay Per Crawl?](/ai-crawl-control/features/pay-per-crawl/what-is-pay-per-crawl/).
 
 </Example>
 
@@ -110,7 +110,7 @@ For each AI crawler, you can choose to allow or block access.
 - **Summary:** You can allow an AI crawler to scrape your content.
 - **When to use:** Allow AI crawlers that offer services which provide value through citations, referrals, or existing agreements.
 - **Implementation:** From the **Actions** column, select **Allow**.
-Note that you can still choose to [Enforce `robots.txt`](/ai-audit/features/manage-ai-crawlers/#take-action-for-each-ai-crawler).
+Note that you can still choose to [Enforce `robots.txt`](/ai-crawl-control/features/manage-ai-crawlers/#take-action-for-each-ai-crawler).
 </Example>
 
 <Example title="Block access">
@@ -124,4 +124,4 @@ Note that you can still choose to [Enforce `robots.txt`](/ai-audit/features/mana
 
 ## Related resources
 
-- Use [pay per crawl](/ai-audit/features/pay-per-crawl/what-is-pay-per-crawl/) to charge AI crawlers every time they access your content.
+- Use [pay per crawl](/ai-crawl-control/features/pay-per-crawl/what-is-pay-per-crawl/) to charge AI crawlers every time they access your content.

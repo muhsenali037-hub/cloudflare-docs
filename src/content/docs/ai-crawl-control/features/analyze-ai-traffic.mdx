@@ -9,12 +9,12 @@ sidebar:
 
 import { Steps, Tabs, TabItem } from "~/components";
 
-AI Audit metrics provide you with insight on how AI crawlers are interacting with your website ([Cloudflare zone](/fundamentals/concepts/accounts-and-zones/#zones)).
+AI Crawl Control metrics provide you with insight on how AI crawlers are interacting with your website ([Cloudflare zone](/fundamentals/concepts/accounts-and-zones/#zones)).
 
-To view AI Audit metrics:
+To view AI Crawl Control metrics:
 
 1. Log in to the [Cloudflare dashboard](https://dash.cloudflare.com/), and select your account and domain.
-2. Go to **AI Audit**.
+2. Go to **AI Crawl Control**.
 
 You can find meaningful information across both **AI Crawlers** and **Metrics** tabs.
 
@@ -26,7 +26,7 @@ The **AI Crawlers** tab provides you with the following information:
 - Number of requests made by each AI crawler
 - Number of `robots.txt` violations for each crawler
 
-## View AI Audit metrics
+## View AI Crawl Control metrics
 
 The **Metrics** tab provides you with the following metrics to help you understand how AI crawlers are interacting with your website.
 
@@ -43,10 +43,10 @@ The **Metrics** tab provides you with the following metrics to help you understa
 | Referrals                             | A graph which displays the number of referrals from each AI operator          |
 | Referers                              | The list of referers who directed traffic to your site                        |
 
-:::note[Requests in AI Audit metrics]
-The number of requests in AI Audit metrics are specifically requests which were met with HTTP code 200 (the request was successfully served, with actual content).
+:::note[Requests in AI Crawl Control metrics]
+The number of requests in AI Crawl Control metrics are specifically requests which were met with HTTP code 200 (the request was successfully served, with actual content).
 
-AI Audit metrics filter all other HTTP codes.
+AI Crawl Control metrics filter all other HTTP codes.
 :::
 
 ## Filter date range
@@ -72,4 +72,4 @@ Filter options:
 </TabItem>
 </Tabs>
 
-The values of the AI Audit metrics will update according to your filter.
+The values of the AI Crawl Control metrics will update according to your filter.
